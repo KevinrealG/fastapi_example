@@ -6,7 +6,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 #FastAPI
-from fastapi import FastAPI, Body, Query
+from fastapi import FastAPI, Body, Query, Path
 
 #Models
 class Person(BaseModel):
@@ -39,13 +39,34 @@ def create_person(person: Person = Body(...)):
 #Validation query parameter example
 @app.get("/person/detail")
 def show_person(
-    name: Optional[str] = Query(None, min_length=3, max_length=50), #this min_length and max_length are for validation
-     age: Optional[int] = Query(...) #el triple punto es para que sea obligatorio el parametro
+    name: Optional[str] = Query(
+        None,
+        min_length=1,
+        max_length=50,
+        title="Person Name",
+        description="The name of the person, It's between 1 and 50 characters",
+        ), 
+     age: int = Query(
+        ...,
+        title='Person Age',
+        description='This is the person name, is required',
+        )
      ):
 
     return {"name": name, "age": age}
 
+# validation path parameter example
+@app.get("/person/detail/{person_id}")
+def show_person(
+    person_id: int = Path(
+            ...,
+            gt=0,
+            title="Person ID",
+            description="The ID of the person, It's greater than 0"
 
+            ) #el triple punto es para que sea obligatorio el parametro
+    ):
+    return {"person_id": person_id, person_id: "it exists"} 
 
 
 
