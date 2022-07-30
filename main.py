@@ -16,7 +16,13 @@ class Person(BaseModel):
     #optional attributes
     hair_color: Optional[str] = None
     is_married: Optional[bool] = None
-    
+
+class Location(BaseModel):
+    city: str
+    state: str
+    country: str
+    lat: Optional[float] = None
+    lon: Optional[float] = None
 
 
 app = FastAPI()
@@ -68,7 +74,23 @@ def show_person(
     ):
     return {"person_id": person_id, person_id: "it exists"} 
 
+# Validation request body example
 
+@app.put("/person/{person_id}")
+def update_person(
+    person_id: int = Path(
+            ...,
+            gt=0,
+            title="Person ID",
+            description="The ID of the person, It's greater than 0"
+
+            ),
+    person: Person = Body(...),
+    location: Location = Body(...)
+    ):
+    result = person.dict()
+    result.update(location.dict())
+    return result 
 
 
 
